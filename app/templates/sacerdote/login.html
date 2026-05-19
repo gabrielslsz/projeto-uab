@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Acesso Sacerdote - Gratia{% endblock %}
+{% block content %}
+<div class="gratia-card text-center">
+    <h2 class="mb-4">Identificação do Sacerdote</h2>
+    <p class="text-muted mb-4">Insira seu PIN de acesso para iniciar os atendimentos.</p>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-warning small">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <div class="mb-4">
+            <input type="password" name="pin" class="form-control form-control-lg text-center" 
+                   placeholder="000000" maxlength="6" inputmode="numeric" required 
+                   style="letter-spacing: 0.5rem; font-size: 2rem;">
+        </div>
+        <button type="submit" class="btn btn-gratia-primary btn-lg">Entrar no Painel</button>
+    </form>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('fiel.recepcao') }}" class="text-muted small">Voltar para a recepção</a>
+    </div>
+</div>
+{% endblock %}

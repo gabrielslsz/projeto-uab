@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Bem-vindo - Gratia{% endblock %}
+{% block content %}
+<div class="gratia-card text-center">
+    <h2 class="mb-4">Escolha seu Confessor</h2>
+    
+    {% if sacerdotes %}
+        <p class="mb-4">Os seguintes sacerdotes estão atendendo agora:</p>
+        <div class="d-grid gap-3">
+            {% for sacerdote in sacerdotes %}
+                <a href="{{ url_for('fiel.identificacao', sacerdote_id=sacerdote.id) }}" class="btn btn-gratia-primary">
+                    {{ sacerdote.nome }}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Não há sacerdotes disponíveis para atendimento imediato no momento.
+        </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <a href="#" class="btn btn-gratia-outline">Agendar para outro dia</a>
+    </div>
+</div>
+{% endblock %}

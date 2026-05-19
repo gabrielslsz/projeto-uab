@@ -1,29 +1,22 @@
-from flask import Flask, redirect, url_for
+from flask import Flask
 from config import Config
 from app.database import db
+from flask_socketio import SocketIO
 
-# Import Blueprints
-from app.controllers.auth_controller import auth_bp
-from app.controllers.proprietario_controller import proprietario_bp
-from app.controllers.administrador_controller import admin_bp
-from app.controllers.atendente_controller import atendente_bp
-from app.controllers.cliente_controller import cliente_bp
+socketio = SocketIO()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    
+
     db.init_app(app)
-    
+    socketio.init_app(app, cors_allowed_origins="*")
+
     # Registro de Blueprints
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(proprietario_bp)
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(atendente_bp)
-    app.register_blueprint(cliente_bp)
+    from app.controllers.fiel_controller import fiel_bp
+    from app.controllers.sacerdote_controller import sacerdote_bp
     
-    @app.route('/')
-    def index():
-        return redirect(url_for('auth.login'))
-    
+    app.register_blueprint(fiel_bp)
+    app.register_blueprint(sacerdote_bp)
+
     return app

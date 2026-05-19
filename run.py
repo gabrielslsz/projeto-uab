@@ -1,25 +1,20 @@
-from app import create_app
+from app import create_app, socketio
 from app.database import db
-from app.models.usuario_model import UsuarioModel
-from config import Config
 import os
 
 app = create_app()
 
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # Cria as tabelas se não existirem
-        
-        # Cria o proprietário inicial se o banco estiver vazio
-        if not UsuarioModel.query.filter_by(role="PROPRIETARIO").first():
-            novo_proprietario = UsuarioModel(
-                email=Config.PROPRIETARIO_EMAIL,
-                nome="Proprietário Principal",
-                role="PROPRIETARIO"
-            )
-            novo_proprietario.set_senha(Config.PROPRIETARIO_PASSWORD)
-            db.session.add(novo_proprietario)
-            db.session.commit()
-            print(f"Proprietário inicial criado: {Config.PROPRIETARIO_EMAIL}")
-            
-    app.run(host="0.0.0.0", port=5000)
+        # Garante que a pasta app/db existe
+        db_path = os.path.join(app.root_path, 'db')
+        if not os.path.exists(db_path):
+            os.makedirs(db_path)
+            print(f"Diretório criado: {db_path}")
+
+        # Importa os modelos para garantir a criação das tabelas
+        from app.models.models import Sacerdote, Agenda, Atendimento
+        db.create_all()
+        print("Ambiente Gratia inicializado com sucesso.")
+    
+    socketio.run(app, debug=True, host="0.0.0.0", port=5001)

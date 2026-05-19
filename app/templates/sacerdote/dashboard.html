@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Painel do Sacerdote - Gratia{% endblock %}
+{% block content %}
+<div class="gratia-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">{{ sacerdote.nome }}</h2>
+            <span class="badge {% if sacerdote.status == 'DISPONIVEL' %}bg-success{% else %}bg-warning{% endif %}" id="status-badge">
+                {{ sacerdote.status }}
+            </span>
+        </div>
+        <a href="{{ url_for('sacerdote.logout') }}" class="btn btn-sm btn-outline-danger">Sair</a>
+    </div>
+
+    <div class="text-center py-5 my-4 bg-light rounded-4">
+        <p class="text-muted small mb-1">CHAMANDO AGORA</p>
+        <h1 class="display-2 mb-4" id="fiel-atual">
+            {% if proximo %}{{ proximo.identificador_exibicao }}{% else %}---{% endif %}
+        </h1>
+        
+        <button class="btn btn-gratia-primary btn-lg px-5 py-3" id="btn-proximo" {% if not proximo %}disabled{% endif %}>
+            Chamar Próximo
+        </button>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-6">
+            <button class="btn w-100 border py-3" onclick="alterarStatus('DISPONIVEL')">
+                Atender
+            </button>
+        </div>
+        <div class="col-6">
+            <button class="btn w-100 border py-3" onclick="alterarStatus('PAUSADO')">
+                Pausar oração
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h5 class="mb-3">Fila de Espera (<span id="count-fila">{{ total_fila }}</span>)</h5>
+        <div class="list-group list-group-flush" id="lista-fila">
+            {% if total_fila > 0 %}
+                <p class="text-muted small">Os fiéis aparecerão aqui conforme entrarem na fila.</p>
+            {% else %}
+                <p class="text-muted small">Fila vazia no momento.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+    const socket = io();
+    const btnProximo = document.getElementById('btn-proximo');
+    const fielAtual = document.getElementById('fiel-atual');
+
+    btnProximo.addEventListener('click', () => {
+        fetch("{{ url_for('sacerdote.chamar_proximo') }}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                fielAtual.innerText = data.fiel;
+                window.location.reload(); // Recarregar para atualizar contagem e lista (simplificação)
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+
+    function alterarStatus(status) {
+        fetch("{{ url_for('sacerdote.alterar_status') }}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({status: status})
+        }).then(() => window.location.reload());
+    }
+
+    // Ouvir novos fiéis entrando na fila
+    socket.on('novo_fiel', (data) => {
+        if (data.sacerdote_id === "{{ sacerdote.id }}") {
+            window.location.reload();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Identificação - Gratia{% endblock %}
+{% block content %}
+<div class="gratia-card">
+    <h2 class="text-center mb-4">Quase lá...</h2>
+    <p class="text-center text-muted mb-4">Você será atendido pelo <strong>{{ sacerdote.nome }}</strong>.</p>
+    
+    <form action="{{ url_for('fiel.entrar_fila') }}" method="POST">
+        <input type="hidden" name="sacerdote_id" value="{{ sacerdote.id }}">
+        
+        <div class="mb-4">
+            <label class="form-label">Como deseja ser chamado?</label>
+            <input type="text" name="nome_exibicao" class="form-control form-control-lg" placeholder="Seu nome ou pseudônimo">
+            <div class="form-text">Sua privacidade é importante. Pode usar um apelido se preferir.</div>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label">WhatsApp (para avisarmos sua vez)</label>
+            <input type="tel" name="whatsapp" class="form-control form-control-lg" placeholder="(00) 00000-0000">
+        </div>
+        
+        <button type="submit" class="btn btn-gratia-primary btn-lg">Entrar na Fila</button>
+    </form>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('fiel.recepcao') }}" class="text-muted">Voltar</a>
+    </div>
+</div>
+{% endblock %}

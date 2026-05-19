@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sua Posição - Gratia{% endblock %}
+{% block content %}
+<div class="gratia-card text-center">
+    <h2 class="mb-3">Tudo certo, {{ atendimento.identificador_exibicao }}!</h2>
+    <p class="text-muted">Sua posição na fila é:</p>
+    
+    <div class="posicao-numero my-4">{{ posicao }}º</div>
+    
+    <p class="mb-4">Aguarde em silêncio e oração. Enviaremos uma mensagem no seu WhatsApp quando sua vez estiver chegando.</p>
+    
+    <div class="alert alert-warning py-3">
+        <strong>Atenção:</strong> Fique atento ao seu celular e à proximidade do confessionário.
+    </div>
+
+    <div class="mt-4">
+        <small class="text-muted">ID do Atendimento: {{ atendimento.id[:8] }}</small>
+    </div>
+</div>
+{% endblock %}

@@ -9,6 +9,8 @@ Projeto Flask alinhado à especificação em `doc/03-especs.md`.
 - Modelos de usuários, tickets e logs de operação
 - Login, cadastro de cliente e criação de atendente com auditoria
 - Bootstrap do usuário Proprietário inicial no primeiro boot
+- Cache em memória para lookup de usuários por email
+- Fila de jobs em memória para persistência assíncrona de logs
 
 ## Dependências
 

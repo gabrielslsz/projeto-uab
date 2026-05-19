@@ -1,10 +1,9 @@
 from functools import wraps
 
-from flask import Blueprint, abort, jsonify, request, session
+from flask import Blueprint, abort, jsonify, request, session, current_app
 
-from app.database import db
-from app.models.log_model import LogOperacaoModel
-from app.models.usuario_model import UsuarioModel
+from app.services.log_service import enfileirar_log_operacao
+from app.services.usuario_service import EmailJaEmUsoError, criar_usuario
 
 admin_bp = Blueprint("administrador", __name__)
 
@@ -29,29 +28,23 @@ def painel():
 @verificar_permissao_admin
 def criar_atendente():
     dados = request.form
-    email = dados.get("email", "").strip().lower()
-
-    if UsuarioModel.query.filter_by(email=email).first() is not None:
+    try:
+        novo_atendente = criar_usuario(
+            nome=dados.get("nome", ""),
+            email=dados.get("email", ""),
+            senha=dados.get("senha", ""),
+            role="ATENDENTE",
+            criado_por_id=session.get("user_id"),
+        )
+    except EmailJaEmUsoError:
         return jsonify({"error": "Email já em uso"}), 409
 
-    novo_atendente = UsuarioModel(
-        nome=dados.get("nome", "").strip(),
-        email=email,
-        role="ATENDENTE",
-        criado_por_id=session.get("user_id"),
+    enfileirar_log_operacao(
+        current_app._get_current_object(),
+        session["user_id"],
+        "CRIAR_ATENDENTE",
+        "usuarios",
+        novo_atendente.id,
     )
-    novo_atendente.set_senha(dados.get("senha", ""))
-
-    db.session.add(novo_atendente)
-    db.session.flush()
-
-    log = LogOperacaoModel(
-        usuario_id=session["user_id"],
-        acao="CRIAR_ATENDENTE",
-        tabela_afetada="usuarios",
-        registro_afetado_id=novo_atendente.id,
-    )
-    db.session.add(log)
-    db.session.commit()
 
     return jsonify({"message": "Atendente criado"}), 201

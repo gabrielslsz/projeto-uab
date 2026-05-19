@@ -29,6 +29,12 @@ Este documento descreve o estado real do projeto após o alinhamento com `doc/03
 - `app/controllers/administrador_controller.py` implementa a verificação de permissão e `POST /admin/atendentes/novo`.
 - `app/controllers/proprietario_controller.py`, `app/controllers/atendente_controller.py` e `app/controllers/cliente_controller.py` expõem painéis mínimos para suportar os redirecionamentos.
 
+## Otimizações internas
+
+- A busca de usuários por email é cacheada em memória e invalidada após cadastros para reduzir consultas repetidas.
+- A auditoria de criação de atendentes é enfileirada em um job leve em memória, mantendo a resposta da requisição mais previsível.
+- A implementação usa apenas biblioteca padrão para cache e fila, sem adicionar dependências externas.
+
 ## Apresentação
 
 - `app/templates/base.html` fornece a estrutura base com Bootstrap e layout neutro para as páginas Jinja2.

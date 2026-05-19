@@ -74,6 +74,7 @@ def test_login_redirects_by_role(tmp_path, monkeypatch):
 
 def test_admin_can_create_atendente_and_log(tmp_path, monkeypatch):
     application, database, models_module = _load_app(tmp_path, monkeypatch)
+    from app.services.job_queue import aguardar_jobs
 
     with application.app_context():
         admin = models_module.UsuarioModel(nome="Admin", email="admin@empresa.com", role="ADMINISTRADOR")
@@ -93,6 +94,7 @@ def test_admin_can_create_atendente_and_log(tmp_path, monkeypatch):
     )
 
     assert response.status_code == 201
+    aguardar_jobs()
 
     with application.app_context():
         atendente = models_module.UsuarioModel.query.filter_by(email="bruno@empresa.com").first()

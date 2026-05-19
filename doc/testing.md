@@ -24,3 +24,5 @@ python3 -m venv .venv
 - Criação do Proprietário inicial no bootstrap
 - Fluxo de login por role
 - Criação de atendente e auditoria da operação
+- Escoamento da fila de jobs antes da validação do log assíncrono
+- Reutilização do cache de lookup de usuário durante autenticação e cadastro

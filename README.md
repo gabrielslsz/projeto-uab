@@ -1,4 +1,4 @@
-# Sistema de Atendimento
+# Gratia
 
 Projeto Flask alinhado à especificação em `doc/03-especs.md`.
 

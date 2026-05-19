@@ -1,4 +1,4 @@
-Especificação do Sistema de Atendimento
+Especificação do Gratia
 1. Configurações e Ambiente
 /requirements.txt
 ação: criar
@@ -199,7 +199,7 @@ pseudocódigo:
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>{% block title %}Sistema de Atendimento{% endblock %}</title>
+<title>{% block title %}Gratia{% endblock %}</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.c:
 </head>
 <body>

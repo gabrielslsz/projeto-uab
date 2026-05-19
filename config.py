@@ -1,17 +1,23 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
-basedir = os.path.abspath(os.path.dirname(__file__))
+
+_basedir = os.path.abspath(os.path.dirname(__file__))
+
+
+def _as_bool(value):
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "gratia-secret-key-123")
-    
-    # Busca por GRATIA_DATABASE_URI primeiro para evitar conflito com o projeto anterior
-    db_uri = os.getenv("GRATIA_DATABASE_URI")
-    if not db_uri:
-        # Se não houver, usa o padrão absoluto na pasta app/db
-        db_uri = f"sqlite:///{os.path.join(basedir, 'app', 'db', 'gratia.db')}"
-    
-    SQLALCHEMY_DATABASE_URI = db_uri
+    SECRET_KEY = os.getenv("SECRET_KEY", "string-aleatoria-segura-aqui")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URI",
+        f"sqlite:///{os.path.join(_basedir, 'app', 'db', 'atendimento.db')}",
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEBUG = _as_bool(os.getenv("DEBUG_MODE", "False"))
+    PROPRIETARIO_EMAIL = os.getenv("PROPRIETARIO_EMAIL", "admin@empresa.com")
+    PROPRIETARIO_PASSWORD = os.getenv("PROPRIETARIO_PASSWORD", "senha_segura_inicial")

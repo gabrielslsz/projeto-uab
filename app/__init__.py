@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from config import Config
 from app.database import db
 
@@ -21,5 +21,9 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(atendente_bp)
     app.register_blueprint(cliente_bp)
+    
+    @app.route('/')
+    def index():
+        return redirect(url_for('auth.login'))
     
     return app

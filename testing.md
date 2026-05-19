@@ -49,11 +49,11 @@ Este documento descreve a estratégia de testes automatizados para o sistema, pr
 Os testes devem ser executados antes de cada commit para garantir que não houve regressões.
 
 ```bash
+# Definir o caminho do projeto para o Python
+export PYTHONPATH=$PYTHONPATH:.
+
 # Executar todos os testes
 pytest
-
-# Executar com relatório de cobertura (se instalado pytest-cov)
-pytest --cov=app tests/
 ```
 
 ## 4. Próximos Passos (TDD Workflow)

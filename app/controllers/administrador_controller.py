@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, abort, jsonify
+from flask import Blueprint, request, session, abort, jsonify, render_template
 from app.models.usuario_model import UsuarioModel
 from app.models.ticket_model import TicketModel
 from app.models.log_model import LogOperacaoModel
@@ -9,6 +9,11 @@ admin_bp = Blueprint('admin', __name__)
 def verificar_permissao_admin():
     if session.get('user_role') != 'ADMINISTRADOR':
         abort(403)
+
+@admin_bp.route('/admin')
+def index():
+    verificar_permissao_admin()
+    return render_template('administrador.html')
 
 @admin_bp.route('/admin/atendentes/novo', methods=['POST'])
 def novo_atendente():

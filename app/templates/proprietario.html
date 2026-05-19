@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Painel Proprietário{% endblock %}
+{% block content %}
+<h1>Painel do Proprietário</h1>
+<p>Bem-vindo, {{ session.get('user_role') }}.</p>
+{% endblock %}

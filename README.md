@@ -11,6 +11,7 @@ Projeto Flask alinhado à especificação em `doc/03-especs.md`.
 - Bootstrap do usuário Proprietário inicial no primeiro boot
 - Cache em memória para lookup de usuários por email
 - Fila de jobs em memória para persistência assíncrona de logs
+- Layout frontend responsivo com componentes Jinja compartilhados e estados de formulário acessíveis
 
 ## Dependências
 
@@ -30,3 +31,7 @@ Projeto Flask alinhado à especificação em `doc/03-especs.md`.
 ## Como testar
 
 Execute `pytest -q` dentro do ambiente virtual já com as dependências instaladas. A configuração detalhada está em `doc/testing.md`.
+
+## Componentes de frontend
+
+Veja `doc/frontend-components.md` para a relação das telas, macros, assets CSS e JavaScript compartilhados.

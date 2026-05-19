@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Painel do Cliente{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Cliente</p>
+        <h1 class="page-title display-6 mb-3">Painel do cliente</h1>
+        <p class="section-description mb-0">A área mantém uma estrutura estável para futuras telas sem alterar o contrato atual.</p>
+    </header>
+
+    {{ ui.empty_state(
+        'Nenhum conteúdo carregado',
+        'Esta versão exibe apenas um estado vazio controlado, com contraste e foco visual adequados.'
+    ) }}
+</div>
+{% endblock %}

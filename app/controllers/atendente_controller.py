@@ -1,8 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 atendente_bp = Blueprint("atendente", __name__)
 
 
 @atendente_bp.route("/atendente/painel")
 def painel():
-    return "Painel do Atendente"
+    return render_template("atendente/painel.html")

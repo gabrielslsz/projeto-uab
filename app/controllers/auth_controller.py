@@ -1,6 +1,6 @@
-from flask import Blueprint, abort, redirect, request, session, url_for
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 
-from app.services.usuario_service import autenticar_usuario, criar_usuario, EmailJaEmUsoError
+from app.services.usuario_service import EmailJaEmUsoError, autenticar_usuario, criar_usuario
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -13,8 +13,11 @@ ROLE_ENDPOINTS = {
 }
 
 
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "GET":
+        return render_template("auth/login.html")
+
     email = request.form.get("email", "").strip().lower()
     senha = request.form.get("senha", "")
 
@@ -30,8 +33,11 @@ def login():
     return redirect(url_for(endpoint))
 
 
-@auth_bp.route("/cadastro-cliente", methods=["POST"])
+@auth_bp.route("/cadastro-cliente", methods=["GET", "POST"])
 def cadastro_cliente():
+    if request.method == "GET":
+        return render_template("auth/cadastro_cliente.html")
+
     dados = request.form
     try:
         criar_usuario(

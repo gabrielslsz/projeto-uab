@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Entrar no Painel{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Acesso restrito</p>
+        <h1 class="page-title display-6 mb-3">Entrar no painel</h1>
+        <p class="section-description mb-0">Use seu email e senha para continuar.</p>
+    </header>
+
+    <form method="POST" action="{{ url_for('auth.login') }}" data-enhanced-form data-loading-text="Entrando..." data-timeout-ms="12000" novalidate>
+        {{ ui.form_feedback('login-feedback') }}
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="email" class="form-control" autocomplete="email" required aria-describedby="email-help">
+            <div id="email-help" class="form-text">Informe o endereço usado no cadastro.</div>
+            <div class="invalid-feedback">Informe um email válido.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input id="senha" name="senha" type="password" class="form-control" autocomplete="current-password" required>
+            <div class="invalid-feedback">Informe sua senha.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+    </form>
+
+    <div class="text-center">
+        <a class="app-link" href="{{ url_for('auth.cadastro_cliente') }}">Criar cadastro de cliente</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import Blueprint, abort, jsonify, request, session, current_app
+from flask import Blueprint, abort, current_app, jsonify, render_template, request, session
 
 from app.services.log_service import enfileirar_log_operacao
 from app.services.usuario_service import EmailJaEmUsoError, criar_usuario
@@ -21,7 +21,7 @@ def verificar_permissao_admin(view_func):
 @admin_bp.route("/admin/painel")
 @verificar_permissao_admin
 def painel():
-    return "Painel do Administrador"
+    return render_template("administrador/painel.html")
 
 
 @admin_bp.route("/admin/atendentes/novo", methods=["POST"])

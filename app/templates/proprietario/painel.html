@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Painel do Proprietário{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Proprietário</p>
+        <h1 class="page-title display-6 mb-3">Visão geral</h1>
+        <p class="section-description mb-0">Painel reservado para o primeiro acesso e navegação das áreas administrativas.</p>
+    </header>
+
+    {{ ui.empty_state(
+        'Fluxo principal concluído',
+        'Não há widgets adicionais nesta camada. A navegação redireciona para os painéis específicos de cada papel.'
+    ) }}
+</div>
+{% endblock %}

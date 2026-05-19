@@ -1,0 +1,30 @@
+{% macro flash_messages(messages, tone='warning') -%}
+    {% if messages %}
+        <div class="stack-gap-3 mb-4" aria-live="polite" aria-atomic="true">
+            {% for message in messages %}
+                <div class="alert alert-{{ tone }} app-alert mb-2" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{%- endmacro %}
+
+{% macro form_feedback(element_id, tone='info', hidden=True) -%}
+    <div
+        id="{{ element_id }}"
+        class="alert alert-{{ tone }} form-feedback {% if hidden %}d-none{% endif %}"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
+{%- endmacro %}
+
+{% macro empty_state(title, description, action_text=None, action_href=None) -%}
+    <section class="empty-state text-center" aria-labelledby="empty-state-title">
+        <div class="empty-state-mark" aria-hidden="true">•</div>
+        <h2 id="empty-state-title" class="h4 mb-3">{{ title }}</h2>
+        <p class="text-secondary mb-0">{{ description }}</p>
+        {% if action_text and action_href %}
+            <a class="btn btn-outline-primary mt-4" href="{{ action_href }}">{{ action_text }}</a>
+        {% endif %}
+    </section>
+{%- endmacro %}

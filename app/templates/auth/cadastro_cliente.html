@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Cadastro de Cliente{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Novo cliente</p>
+        <h1 class="page-title display-6 mb-3">Criar acesso</h1>
+        <p class="section-description mb-0">Preencha os dados para cadastrar o cliente no sistema.</p>
+    </header>
+
+    <form method="POST" action="{{ url_for('auth.cadastro_cliente') }}" data-enhanced-form data-loading-text="Cadastrando..." data-timeout-ms="12000" novalidate>
+        {{ ui.form_feedback('cliente-feedback') }}
+
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input id="nome" name="nome" type="text" class="form-control" autocomplete="name" required>
+            <div class="invalid-feedback">Informe o nome do cliente.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="email" class="form-control" autocomplete="email" required>
+            <div class="invalid-feedback">Informe um email válido.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="senha" class="form-label">Senha</label>
+            <input id="senha" name="senha" type="password" class="form-control" autocomplete="new-password" required>
+            <div class="invalid-feedback">Informe uma senha.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Cadastrar cliente</button>
+    </form>
+
+    <div class="text-center">
+        <a class="app-link" href="{{ url_for('auth.login') }}">Voltar para o login</a>
+    </div>
+</div>
+{% endblock %}

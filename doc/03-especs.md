@@ -212,3 +212,31 @@ pseudocódigo:
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundl
 </body>
 </html>
+
+6. Refinamentos de Frontend
+
+6.1 Base visual e estrutura de layout
+- O layout base deve manter navegação superior, link de atalho para o conteúdo principal, área principal com landmark semântico e rodapé simples.
+- O painel central deve preservar largura responsiva única, com adaptação para desktop, tablet e mobile.
+- O sistema visual deve usar um conjunto único de tokens de cor, foco visível, bordas suaves e contrastes legíveis.
+
+6.2 Componentes de interface
+- As telas devem reutilizar componentes Jinja para mensagens, feedback de formulário e estados vazios.
+- Os formulários devem exibir labels explícitos, ajuda contextual e região de feedback acessível.
+- Os botões de ação devem apresentar estados visuais consistentes para padrão, hover, foco e carregamento.
+
+6.3 Estados de tela e navegação
+- As páginas de autenticação devem exibir estado de carregamento ao enviar formulário, erro textual quando a operação falhar e redirecionamento quando a operação for concluída.
+- As telas de painel devem exibir estado vazio controlado quando não houver conteúdo adicional.
+- A navegação entre login, cadastro de cliente e painéis deve preservar o contrato atual das rotas existentes.
+
+6.4 Responsividade e acessibilidade
+- O frontend deve ser legível em desktop, tablet e mobile sem depender de largura fixa.
+- O layout deve permitir navegação por teclado com foco visível.
+- Os campos devem usar atributos `autocomplete`, `required`, `type` e regiões `aria-live` quando apropriado.
+- O comportamento deve respeitar `prefers-reduced-motion` e não depender de movimento para compreensão do estado.
+
+6.5 Integração frontend/backend
+- Os formulários devem continuar compatíveis com os endpoints existentes e interpretar corretamente respostas de redirecionamento, texto e JSON.
+- O frontend deve tratar timeout, falha de rede e erro de validação sem alterar os contratos de backend.
+- O comportamento de renderização deve permanecer previsível: GET para exibição das páginas e POST para submissão dos dados.

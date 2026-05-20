@@ -8,25 +8,53 @@ Esta inspeção detalhada de cibersegurança foi realizada no projeto Gratia par
 
 | Severidade | Quantidade |
 | :--- | :--- |
-| Crítica | 1 |
-| Alta | 2 |
-| Média | 2 |
+| Crítica | 2 |
+| Alta | 3 |
+| Média | 3 |
 | Baixa | 1 |
-| **Total** | **6** |
+| **Total** | **9** |
 
 ### As 5 Ações Mais Urgentes
 
-1. **Hash de Credenciais:** Implementar hashing (ex: Argon2 ou BCrypt) para os PINs de acesso dos sacerdotes.
-2. **Desativar Modo Debug:** Remover `debug=True` do ponto de entrada da aplicação em produção.
-3. **Segurança de Segredos:** Eliminar segredos padrão (default values) para `SECRET_KEY`.
-4. **Restrição de CORS:** Limitar as origens permitidas no SocketIO em vez de usar `*`.
-5. **Atualização de Dependências:** Revisar e atualizar bibliotecas para mitigar vulnerabilidades conhecidas (CVEs).
+1. **Hash de Credenciais:** Implementar hashing (ex: BCrypt) para os PINs dos sacerdotes.
+2. **Proteção contra CSRF:** Habilitar proteção CSRF em todos os formulários e rotas POST.
+3. **Desativar Modo Debug:** Remover `debug=True` da configuração de produção.
+4. **Segurança de Sessão:** Configurar cookies de sessão como `HTTPOnly`, `Secure` e `SameSite=Lax`.
+5. **Segurança de Segredos:** Eliminar segredos padrão para `SECRET_KEY`.
 
 ---
 
-## Detalhamento das Vulnerabilidades (Nível: SUPERFICIAL)
+## Detalhamento das Vulnerabilidades (Nível: MODERADO)
 
-### 1. Armazenamento de Credenciais em Texto Claro
+... (achados anteriores permanecem, adicionando novos abaixo)
+
+### 7. Ausência de Proteção contra CSRF (Cross-Site Request Forgery)
+- **Localização:** Global (`app/__init__.py`), Formulários em `app/templates/`
+- **Descrição:** A aplicação não utiliza tokens CSRF para validar requisições de alteração de estado (POST).
+- **Evidência:** Os formulários em `login.html` e `identificacao.html` não possuem campo `csrf_token`, e o `app/__init__.py` não inicializa extensões de proteção como `Flask-WTF`.
+- **Impacto Potencial:** Um atacante pode induzir um usuário autenticado (como um sacerdote) a realizar ações indesejadas (ex: chamar próximo fiel, alterar status) simplesmente visitando um site malicioso.
+- **Nível de Severidade:** Crítica
+- **Recomendação:** Implementar `flask_wtf.csrf.CSRFProtect` e adicionar `{{ form.csrf_token }}` ou o campo manual em todos os formulários.
+- **Referências:** OWASP A01:2021 – Broken Access Control, CWE-352.
+
+### 8. Configurações de Cookie de Sessão Inseguras
+- **Localização:** `config.py`
+- **Descrição:** Não há definição explícita de flags de segurança para os cookies de sessão.
+- **Evidência:** Ausência de `SESSION_COOKIE_HTTPONLY`, `SESSION_COOKIE_SECURE` e `SESSION_COOKIE_SAMESITE` na classe `Config`.
+- **Impacto Potencial:** Cookies sem `HTTPOnly` podem ser lidos por scripts maliciosos (XSS). Sem `Secure`, podem ser interceptados em redes não criptografadas.
+- **Nível de Severidade:** Alta
+- **Recomendação:** Definir `SESSION_COOKIE_HTTPONLY=True`, `SESSION_COOKIE_SECURE=True` (em prod) e `SESSION_COOKIE_SAMESITE='Lax'`.
+- **Referências:** OWASP A01:2021 – Broken Access Control, CWE-614.
+
+### 9. Ausência de Redirecionamento HTTPS e Cabeçalhos de Segurança
+- **Localização:** `app/__init__.py`
+- **Descrição:** A aplicação não força o uso de HTTPS nem define cabeçalhos como HSTS, CSP ou X-Content-Type-Options.
+- **Evidência:** Nenhuma configuração de middleware de segurança (como `Flask-Talisman`) foi encontrada.
+- **Impacto Potencial:** Ataques de Man-in-the-Middle (MitM) e injeção de scripts devido à falta de Content Security Policy.
+- **Nível de Severidade:** Média
+- **Recomendação:** Utilizar `Flask-Talisman` para forçar HTTPS e definir cabeçalhos de segurança padrão.
+- **Referências:** OWASP A02:2021 – Security Misconfiguration, CWE-1021.
+
 - **Localização:** `app/models/models.py` (Classe `Sacerdote`), `app/controllers/sacerdote_controller.py` (Função `login`)
 - **Descrição:** O PIN de acesso do sacerdote é armazenado e comparado em texto claro no banco de dados.
 - **Evidência:**

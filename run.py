@@ -1,20 +1,27 @@
-from app import create_app, socketio
-from app.database import db
 import os
+
+from app import create_app
+from app.database import db
+from app.services.usuario_service import garantir_proprietario_inicial
 
 app = create_app()
 
-if __name__ == "__main__":
-    with app.app_context():
-        # Garante que a pasta app/db existe
-        db_path = os.path.join(app.root_path, 'db')
-        if not os.path.exists(db_path):
-            os.makedirs(db_path)
-            print(f"Diretório criado: {db_path}")
 
-        # Importa os modelos para garantir a criação das tabelas
-        from app.models.models import Sacerdote, Agenda, Atendimento
+def ensure_database_directory(application):
+    if application.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite:///"):
+        database_path = application.config["SQLALCHEMY_DATABASE_URI"].replace("sqlite:///", "", 1)
+        directory = os.path.dirname(database_path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+
+
+def initialize_database(application):
+    ensure_database_directory(application)
+    with application.app_context():
         db.create_all()
-        print("Ambiente Gratia inicializado com sucesso.")
-    
-    socketio.run(app, debug=True, host="0.0.0.0", port=5001)
+        garantir_proprietario_inicial(application)
+
+
+if __name__ == "__main__":
+    initialize_database(app)
+    app.run(host="0.0.0.0", port=5000, debug=app.config["DEBUG"])

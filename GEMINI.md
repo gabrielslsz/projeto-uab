@@ -1,6 +1,6 @@
-# Projeto Sistema de Atendimento
+# Projeto Gratia
 
-Este projeto é um sistema de atendimento desenvolvido com Flask, seguindo as especificações em `doc/03-especs.md`.
+Este projeto é o Gratia, desenvolvido com Flask, seguindo as especificações em `doc/03-especs.md`.
 
 ## Estrutura do Projeto
 

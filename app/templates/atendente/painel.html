@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Painel do Atendente{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Atendimento</p>
+        <h1 class="page-title display-6 mb-3">Painel do atendente</h1>
+        <p class="section-description mb-0">Interface mínima com foco em clareza visual e navegação consistente.</p>
+    </header>
+
+    {{ ui.empty_state(
+        'Sem tickets nesta tela',
+        'Os tickets permanecem fora desta implementação frontend mínima, mantendo o contrato atual do backend.'
+    ) }}
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "_components.html" as ui %}
+{% block title %}Painel Administrativo{% endblock %}
+{% block content %}
+<div class="d-flex flex-column gap-4">
+    <header>
+        <p class="section-kicker mb-2">Administração</p>
+        <h1 class="page-title display-6 mb-3">Cadastrar atendente</h1>
+        <p class="section-description mb-0">A tela mantém o fluxo curto, com feedback visível e envio assíncrono.</p>
+    </header>
+
+    <form method="POST" action="{{ url_for('administrador.criar_atendente') }}" data-enhanced-form data-loading-text="Salvando..." data-timeout-ms="12000" novalidate>
+        {{ ui.form_feedback('atendente-feedback') }}
+
+        <div class="row g-3">
+            <div class="col-12">
+                <label for="nome" class="form-label">Nome</label>
+                <input id="nome" name="nome" type="text" class="form-control" autocomplete="name" required>
+                <div class="invalid-feedback">Informe o nome do atendente.</div>
+            </div>
+            <div class="col-12">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="email" class="form-control" autocomplete="email" required>
+                <div class="invalid-feedback">Informe um email válido.</div>
+            </div>
+            <div class="col-12">
+                <label for="senha" class="form-label">Senha inicial</label>
+                <input id="senha" name="senha" type="password" class="form-control" autocomplete="new-password" required>
+                <div class="invalid-feedback">Informe uma senha inicial.</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4 w-100">Criar atendente</button>
+    </form>
+
+    {{ ui.empty_state(
+        'Sem cards adicionais nesta versão',
+        'O painel exibe apenas o formulário principal e o feedback de processamento, sem rotas ou widgets extras.'
+    ) }}
+</div>
+{% endblock %}

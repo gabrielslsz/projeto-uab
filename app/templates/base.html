@@ -5,77 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Gratia{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/frontend.css') }}" rel="stylesheet">
     <style>
-        body {
-            background-color: #F8F9FA;
-            font-family: 'Inter', sans-serif;
-            color: #2C3E50;
-        }
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-        }
-        .gratia-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            background: white;
-            padding: 2rem;
-        }
-        .btn-gratia-primary {
-            background-color: #2C3E50;
-            color: white;
-            border-radius: 10px;
-            padding: 15px 30px;
-            font-weight: 600;
-            width: 100%;
-            border: none;
-            transition: all 0.3s;
-        }
-        .btn-gratia-primary:hover {
-            background-color: #34495E;
-            color: #D4AF37;
-        }
-        .btn-gratia-outline {
-            border: 2px solid #D4AF37;
-            color: #2C3E50;
-            border-radius: 10px;
-            padding: 15px 30px;
-            font-weight: 600;
-            width: 100%;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-        .text-pastoral {
-            color: #7F8C8D;
-            font-style: italic;
-        }
-        .posicao-numero {
-            font-size: 4rem;
-            color: #D4AF37;
-            font-weight: bold;
-        }
+        /* Mantido mínimo para permitir leitura rápida do layout base; o sistema visual vive em frontend.css. */
     </style>
 </head>
 <body>
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h1 class="display-4">Gratia</h1>
-            <p class="text-pastoral">"Paz e Bem"</p>
-        </div>
-        
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                {% block content %}{% endblock %}
+    <a class="skip-link" href="#main-content">Pular para o conteúdo principal</a>
+    <div class="app-shell d-flex flex-column">
+        <nav class="navbar navbar-dark app-navbar" aria-label="Barra principal">
+            <div class="container py-2">
+                <div>
+                    <span class="navbar-brand mb-0 h1 app-brand">Gratia</span>
+                    <div class="brand-subtitle text-white-50 small">Paz e Bem</div>
+                </div>
             </div>
-        </div>
+        </nav>
 
-        <div class="text-center mt-5">
-            <hr class="w-25 mx-auto">
-            <p class="small text-muted">© 2026 Gratia - Sistema de Atendimento Pastoral</p>
-        </div>
+        <main id="main-content" class="container flex-grow-1 py-5" tabindex="-1">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-7">
+                    <section class="app-panel p-4 p-md-5" aria-label="Conteúdo principal">
+                        {% block content %}{% endblock %}
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer class="container pb-4">
+            <div class="text-center text-muted small">Gratia</div>
+        </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/frontend.js') }}" defer></script>
 </body>
 </html>

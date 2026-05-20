@@ -116,3 +116,24 @@ Template base com Bootstrap 5, Google Fonts e identidade visual do projeto.
 4. O sacerdote faz login com PIN em `/sacerdote/login`.
 5. O painel mostra a fila e permite chamar o próximo atendimento.
 6. Os eventos de fila são emitidos em tempo real com SocketIO.
+
+## 7. Bootstrap e dados de teste
+
+### [seed.py](../seed.py)
+Script auxiliar para popular o banco com sacerdotes de teste quando necessário.
+
+- Usa `create_app()` para criar o contexto da aplicação.
+- Garante a existência da pasta `app/db`.
+- Executa `db.create_all()` antes de consultar o banco.
+- Cria os sacerdotes `Padre Antônio` e `Padre José` quando a tabela está vazia.
+
+## 8. Cobertura automatizada
+
+### [tests/test_app.py](../tests/test_app.py)
+Os testes automatizados cobrem os fluxos existentes no projeto:
+
+- Registro dos blueprints carregados pela factory.
+- Renderização da recepção com sacerdotes disponíveis.
+- Entrada de fiel na fila e consulta do status.
+- Login do sacerdote, visualização do painel, chamada do próximo fiel e alteração de status.
+- Execução do `seed.py` com criação dos sacerdotes de teste.

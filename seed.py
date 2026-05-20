@@ -1,9 +1,10 @@
-from run import app
+from app import create_app
 from app.database import db
 from app.models.models import Sacerdote, Agenda, Atendimento
 import os
 
 def seed():
+    app = create_app()
     with app.app_context():
         # Garante que a pasta app/db existe (redundância de segurança)
         db_path = os.path.join(app.root_path, 'db')

@@ -22,6 +22,29 @@ Use o Python do ambiente virtual do projeto:
 - A rota `/sacerdote/alterar-status` atualiza o status do sacerdote via JSON.
 - O script `seed.py` cria os sacerdotes de teste quando o banco está vazio.
 
+## Testes de Frontend (Manual e Visual)
+
+### Responsividade
+- [ ] Verificar integridade do layout em 320px (Mobile).
+- [ ] Verificar integridade do layout em 768px (Tablet).
+- [ ] Verificar integridade do layout em 1200px+ (Desktop).
+
+### Acessibilidade
+- [ ] Verificar ordem de tabulação lógica.
+- [ ] Verificar anúncio de atualização de fila por leitores de tela (aria-live).
+- [ ] Verificar contraste das combinações Dourado/Branco e Dourado/Marinho.
+- [ ] Garantir que o foco é visível em todos os elementos interativos.
+
+### Integração em Tempo Real (SocketIO)
+- [ ] Verificar atualização da posição na tela `status.html` quando o sacerdote chama um fiel.
+- [ ] Verificar atualização da lista e contagem na fila no `dashboard.html` sem recarregar a página.
+
+### Estados de Interface
+- [ ] Verificar estado vazio "Sem sacerdotes disponíveis" na recepção.
+- [ ] Verificar feedback de carregamento (*spinner*) ao clicar em "Chamar Próximo".
+- [ ] Verificar mensagens de erro em caso de falha na comunicação com a API.
+- [ ] Verificar validações visuais nos formulários de identificação.
+
 ## Observações
 
 - Os testes usam um banco SQLite temporário em disco.

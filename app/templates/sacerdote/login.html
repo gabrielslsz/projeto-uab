@@ -1,29 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Acesso Sacerdote - Gratia{% endblock %}
+
 {% block content %}
-<div class="gratia-card text-center">
-    <h2 class="mb-4">Identificação do Sacerdote</h2>
-    <p class="text-muted mb-4">Insira seu PIN de acesso para iniciar os atendimentos.</p>
+<div class="gratia-card text-center shadow-lg">
+    <h2 class="mb-4">Acesso do Confessor</h2>
+    <p class="text-muted mb-4">Por favor, insira seu PIN de acesso para abrir o painel de atendimentos.</p>
     
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-warning small">{{ message }}</div>
+          <div class="alert alert-warning border-0 shadow-sm py-3 mb-4" role="alert">
+              {{ message }}
+          </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form method="POST" id="form-login">
         <div class="mb-4">
-            <input type="password" name="pin" class="form-control form-control-lg text-center" 
-                   placeholder="000000" maxlength="6" inputmode="numeric" required 
-                   style="letter-spacing: 0.5rem; font-size: 2rem;">
+            <label for="pin" class="visually-hidden">PIN de 6 dígitos</label>
+            <input type="password" id="pin" name="pin" 
+                   class="form-control form-control-lg text-center border-2" 
+                   placeholder="••••••" 
+                   maxlength="6" 
+                   inputmode="numeric" 
+                   pattern="[0-9]*"
+                   required 
+                   style="letter-spacing: 0.8rem; font-size: 2.5rem; border-radius: 12px;"
+                   autocomplete="one-time-code">
         </div>
-        <button type="submit" class="btn btn-gratia-primary btn-lg">Entrar no Painel</button>
+        
+        <div class="d-grid gap-3">
+            <button type="submit" class="btn btn-gratia-primary" id="btn-login">
+                Entrar no Painel
+            </button>
+            <a href="{{ url_for('fiel.recepcao') }}" class="btn btn-gratia-outline">
+                Voltar à Recepção
+            </a>
+        </div>
     </form>
     
-    <div class="mt-4">
-        <a href="{{ url_for('fiel.recepcao') }}" class="text-muted small">Voltar para a recepção</a>
+    <div class="mt-4 pt-3 border-top">
+        <p class="small text-muted mb-0">Esqueceu seu PIN? Entre em contato com a secretaria paroquial.</p>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('form-login').addEventListener('submit', function() {
+        Gratia.setLoading(document.getElementById('btn-login'), true);
+    });
+</script>
 {% endblock %}

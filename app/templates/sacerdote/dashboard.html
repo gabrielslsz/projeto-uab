@@ -1,88 +1,159 @@
 {% extends "base.html" %}
 {% block title %}Painel do Sacerdote - Gratia{% endblock %}
+
 {% block content %}
-<div class="gratia-card">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="gratia-card" style="max-width: 600px; margin: 0 auto;">
+    <div class="d-flex justify-content-between align-items-start mb-4">
         <div>
-            <h2 class="mb-0">{{ sacerdote.nome }}</h2>
-            <span class="badge {% if sacerdote.status == 'DISPONIVEL' %}bg-success{% else %}bg-warning{% endif %}" id="status-badge">
+            <h2 class="mb-1">{{ sacerdote.nome }}</h2>
+            <span class="badge rounded-pill px-3 py-2" id="status-badge" 
+                  style="background-color: {% if sacerdote.status == 'DISPONIVEL' %}var(--gratia-success){% else %}var(--gratia-warning){% endif %};">
                 {{ sacerdote.status }}
             </span>
         </div>
-        <a href="{{ url_for('sacerdote.logout') }}" class="btn btn-sm btn-outline-danger">Sair</a>
+        <a href="{{ url_for('sacerdote.logout') }}" class="btn btn-sm btn-outline-danger">Encerrar</a>
     </div>
 
-    <div class="text-center py-5 my-4 bg-light rounded-4">
-        <p class="text-muted small mb-1">CHAMANDO AGORA</p>
-        <h1 class="display-2 mb-4" id="fiel-atual">
+    <div class="text-center py-5 my-4 bg-light rounded-4 shadow-sm border">
+        <p class="text-muted small mb-2 tracking-widest" style="letter-spacing: 0.1rem;">ATENDENDO AGORA</p>
+        <h1 class="display-3 mb-4" id="fiel-atual" style="color: var(--gratia-primary);">
             {% if proximo %}{{ proximo.identificador_exibicao }}{% else %}---{% endif %}
         </h1>
         
-        <button class="btn btn-gratia-primary btn-lg px-5 py-3" id="btn-proximo" {% if not proximo %}disabled{% endif %}>
+        <button class="btn btn-gratia-primary mx-auto" id="btn-proximo" 
+                style="max-width: 280px;" {% if not proximo %}disabled{% endif %}>
             Chamar Próximo
         </button>
     </div>
 
     <div class="row g-3">
         <div class="col-6">
-            <button class="btn w-100 border py-3" onclick="alterarStatus('DISPONIVEL')">
-                Atender
+            <button class="btn w-100 border py-3 fw-bold" onclick="alterarStatus('DISPONIVEL')" id="btn-atender">
+                Disponível
             </button>
         </div>
         <div class="col-6">
-            <button class="btn w-100 border py-3" onclick="alterarStatus('PAUSADO')">
-                Pausar oração
+            <button class="btn w-100 border py-3 fw-bold" onclick="alterarStatus('PAUSADO')" id="btn-pausar">
+                Em Oração
             </button>
         </div>
     </div>
 
     <div class="mt-5">
-        <h5 class="mb-3">Fila de Espera (<span id="count-fila">{{ total_fila }}</span>)</h5>
-        <div class="list-group list-group-flush" id="lista-fila">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Fila de Espera</h5>
+            <span class="badge bg-secondary rounded-pill" id="count-fila">{{ total_fila }}</span>
+        </div>
+        
+        <div class="list-group list-group-flush border rounded-3" id="lista-fila">
             {% if total_fila > 0 %}
-                <p class="text-muted small">Os fiéis aparecerão aqui conforme entrarem na fila.</p>
+                <p class="text-muted small p-3 mb-0" id="msg-fila-vazia" style="display: none;">Fila vazia no momento.</p>
             {% else %}
-                <p class="text-muted small">Fila vazia no momento.</p>
+                <p class="text-muted small p-3 mb-0" id="msg-fila-vazia">Fila vazia no momento.</p>
             {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
     const socket = io();
     const btnProximo = document.getElementById('btn-proximo');
     const fielAtual = document.getElementById('fiel-atual');
+    const countFila = document.getElementById('count-fila');
+    const listaFila = document.getElementById('lista-fila');
+    const msgFilaVazia = document.getElementById('msg-fila-vazia');
+    const statusBadge = document.getElementById('status-badge');
 
     btnProximo.addEventListener('click', () => {
+        Gratia.setLoading(btnProximo, true);
         fetch("{{ url_for('sacerdote.chamar_proximo') }}", {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'}
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
                 fielAtual.innerText = data.fiel;
-                window.location.reload(); // Recarregar para atualizar contagem e lista (simplificação)
+                atualizarPainel();
             } else {
-                alert(data.message);
+                Gratia.showFeedback(data.message, "warning");
             }
-        });
+        })
+        .catch(err => Gratia.showFeedback("Erro ao chamar próximo.", "error"))
+        .finally(() => Gratia.setLoading(btnProximo, false));
     });
 
     function alterarStatus(status) {
+        const btn = status === 'DISPONIVEL' ? document.getElementById('btn-atender') : document.getElementById('btn-pausar');
+        const originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = "Salvando...";
+
         fetch("{{ url_for('sacerdote.alterar_status') }}", {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: JSON.stringify({status: status})
-        }).then(() => window.location.reload());
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                statusBadge.innerText = status;
+                statusBadge.style.backgroundColor = status === 'DISPONIVEL' ? 'var(--gratia-success)' : 'var(--gratia-warning)';
+            }
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        });
+    }
+
+    function atualizarPainel() {
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.json())
+            .then(data => {
+                countFila.innerText = data.total_fila;
+                btnProximo.disabled = data.total_fila === 0;
+                
+                // Atualizar lista de espera
+                listaFila.innerHTML = '';
+                if (data.fila.length === 0) {
+                    listaFila.appendChild(msgFilaVazia);
+                    msgFilaVazia.style.display = 'block';
+                } else {
+                    msgFilaVazia.style.display = 'none';
+                    data.fila.forEach(atendimento => {
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item d-flex justify-content-between align-items-center py-3';
+                        item.innerHTML = `
+                            <div>
+                                <span class="fw-bold">${atendimento.nome}</span>
+                                <div class="small text-muted">Chegada: ${atendimento.hora}</div>
+                            </div>
+                            <span class="badge bg-light text-dark border">Aguardando</span>
+                        `;
+                        listaFila.appendChild(item);
+                    });
+                }
+            });
     }
 
     // Ouvir novos fiéis entrando na fila
     socket.on('novo_fiel', (data) => {
         if (data.sacerdote_id === "{{ sacerdote.id }}") {
-            window.location.reload();
+            atualizarPainel();
         }
     });
+
+    // Inicialização
+    atualizarPainel();
 </script>
 {% endblock %}

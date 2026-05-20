@@ -1,26 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Bem-vindo - Gratia{% endblock %}
+
 {% block content %}
-<div class="gratia-card text-center">
+<div class="gratia-card text-center shadow-lg">
     <h2 class="mb-4">Escolha seu Confessor</h2>
     
     {% if sacerdotes %}
-        <p class="mb-4">Os seguintes sacerdotes estão atendendo agora:</p>
-        <div class="d-grid gap-3">
+        <p class="text-muted mb-4">Os seguintes sacerdotes estão atendendo neste momento:</p>
+        <nav class="d-grid gap-3" aria-label="Lista de sacerdotes disponíveis">
             {% for sacerdote in sacerdotes %}
-                <a href="{{ url_for('fiel.identificacao', sacerdote_id=sacerdote.id) }}" class="btn btn-gratia-primary">
+                <a href="{{ url_for('fiel.identificacao', sacerdote_id=sacerdote.id) }}" 
+                   class="btn btn-gratia-primary text-decoration-none">
                     {{ sacerdote.nome }}
                 </a>
             {% endfor %}
-        </div>
+        </nav>
     {% else %}
-        <div class="alert alert-info">
-            Não há sacerdotes disponíveis para atendimento imediato no momento.
+        <div class="alert alert-info border-0 shadow-sm py-4" role="alert">
+            <h5 class="alert-heading">Indisponível</h5>
+            <p class="mb-0">Não há sacerdotes disponíveis para atendimento imediato no momento. Por favor, retorne mais tarde ou verifique os horários de atendimento.</p>
         </div>
     {% endif %}
     
-    <div class="mt-4">
-        <a href="#" class="btn btn-gratia-outline">Agendar para outro dia</a>
+    <div class="mt-4 pt-4 border-top">
+        <p class="small text-muted mb-3">Deseja planejar sua visita?</p>
+        <a href="#" class="btn btn-gratia-outline">
+            Ver Horários da Paróquia
+        </a>
     </div>
 </div>
 {% endblock %}

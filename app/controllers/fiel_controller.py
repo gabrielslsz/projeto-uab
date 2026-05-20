@@ -49,11 +49,23 @@ def entrar_fila():
 @fiel_bp.route('/status/<atendimento_id>')
 def status_atendimento(atendimento_id):
     atendimento = Atendimento.query.get_or_404(atendimento_id)
-    # Cálculo simples de posição (exemplo)
-    posicao = Atendimento.query.filter(
-        Atendimento.sacerdote_id == atendimento.sacerdote_id,
-        Atendimento.status == 'AGUARDANDO',
-        Atendimento.criado_em < atendimento.criado_em
-    ).count() + 1
+    
+    if atendimento.status == 'CHAMADO':
+        posicao = 0
+    elif atendimento.status in ['CONCLUIDO', 'CANCELADO']:
+        posicao = -1
+    else:
+        # Cálculo de posição
+        posicao = Atendimento.query.filter(
+            Atendimento.sacerdote_id == atendimento.sacerdote_id,
+            Atendimento.status == 'AGUARDANDO',
+            Atendimento.criado_em < atendimento.criado_em
+        ).count() + 1
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'posicao': posicao,
+            'status': atendimento.status
+        })
 
     return render_template('fiel/status.html', atendimento=atendimento, posicao=posicao)

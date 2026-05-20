@@ -32,6 +32,13 @@ def dashboard():
     # Próximo da fila
     proximo = fila[0] if fila else None
     
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'total_fila': len(fila),
+            'proximo': proximo.identificador_exibicao if proximo else None,
+            'fila': [{'id': a.id, 'nome': a.identificador_exibicao, 'hora': a.criado_em.strftime('%H:%M')} for a in fila]
+        })
+    
     return render_template('sacerdote/dashboard.html', sacerdote=sacerdote, proximo=proximo, total_fila=len(fila))
 
 @sacerdote_bp.route('/sacerdote/chamar-proximo', methods=['POST'])
@@ -49,10 +56,9 @@ def chamar_proximo():
         proximo.status = 'CHAMADO'
         db.session.commit()
         
-        # Emitir evento em tempo real
-        socketio.emit('proximo_chamado', {
+        # Emitir evento para atualizar posição dos fiéis
+        socketio.emit('posicao_atualizada', {
             'atendimento_id': proximo.id,
-            'identificador': proximo.identificador_exibicao,
             'sacerdote_id': sacerdote_id
         })
         

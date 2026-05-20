@@ -108,6 +108,51 @@ Template base com Bootstrap 5, Google Fonts e identidade visual do projeto.
 - [app/templates/sacerdote/login.html](../app/templates/sacerdote/login.html)
 - [app/templates/sacerdote/dashboard.html](../app/templates/sacerdote/dashboard.html)
 
+## 5. Especificação de Frontend
+
+### 5.1. Design System (Identidade Visual)
+
+O sistema Gratia utiliza uma identidade visual pastoral, limpa e acolhedora, focada na legibilidade e simplicidade.
+
+- **Cores Principais:**
+  - **Primária:** `#2C3E50` (Marinho) - Usada em cabeçalhos, botões principais e elementos de destaque.
+  - **Acento:** `#D4AF37` (Dourado) - Usada para indicadores de status, links ativos e elementos decorativos que remetem ao sagrado.
+  - **Fundo:** `#F8F9FA` (Cinza Suave) - Cor de fundo principal das páginas.
+  - **Superfície:** `#FFFFFF` (Branco) - Fundo de cartões e elementos de interface.
+  - **Sucesso:** `#27AE60` - Indica disponibilidade ou conclusão.
+  - **Aviso:** `#F39C12` - Indica pausa ou atenção necessária.
+
+- **Tipografia:**
+  - **Títulos:** `Playfair Display` (Serifada) - Para uma estética clássica e respeitosa.
+  - **Corpo:** `Inter` (Sans-serif) - Para máxima legibilidade em dispositivos digitais.
+  - **Tamanho Base:** `18px` (Mínimo recomendado para acessibilidade pastoral).
+
+- **Componentes Base:**
+  - **GratiaCard:** Bordas arredondadas (15px), sombra suave (`0 4px 15px rgba(0,0,0,0.05)`), preenchimento interno de `2rem`.
+  - **GratiaButton:** Altura mínima de `48px` para facilitar o toque, bordas de `10px`, estados claros de `:hover`, `:active` e `:focus-visible`.
+
+### 5.2. Acessibilidade e Responsividade
+
+- **Acessibilidade:**
+  - Contraste mínimo de 4.5:1 para textos.
+  - Foco visível em todos os elementos interativos.
+  - Uso de regiões `aria-live` para anunciar atualizações na posição da fila.
+  - Navegação completa por teclado garantida.
+  
+- **Responsividade:**
+  - Design *Mobile-First*.
+  - Layouts fluidos que se adaptam de 320px até resoluções Desktop.
+  - Empilhamento de elementos em telas menores que 768px.
+
+### 5.3. Interação e Real-time
+
+- **SocketIO:** O frontend deve realizar atualizações parciais do DOM (posição na fila, lista de espera) sem recarregar a página.
+- **Feedback Visual:** 
+  - *Spinners* de carregamento em botões durante requisições assíncronas.
+  - Transições suaves (CSS transitions) para mudanças de estado.
+  - Skeletons para estados de carregamento inicial (opcional).
+- **Validação:** Feedback visual imediato em formulários (ex: campo obrigatório, formato inválido).
+
 ## 6. Fluxo principal
 
 1. O fiel entra pela recepção em `/`.

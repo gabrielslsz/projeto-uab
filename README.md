@@ -17,9 +17,10 @@ Sistema Flask para atendimento pastoral com recepção de fiéis, fila em tempo 
 - [run.py](run.py): ponto de entrada da aplicação.
 - [seed.py](seed.py): cria sacerdotes de teste quando o banco está vazio.
 - [app/models/models.py](app/models/models.py): modelos `Sacerdote`, `Agenda` e `Atendimento`.
-- [app/controllers/fiel_controller.py](app/controllers/fiel_controller.py): fluxo público do fiel.
-- [app/controllers/sacerdote_controller.py](app/controllers/sacerdote_controller.py): painel e ações do sacerdote.
-- [app/templates/](app/templates/): views Jinja2 do sistema.
+- [app/controllers/fiel_controller.py](app/controllers/fiel_controller.py): fluxo público do fiel com suporte a real-time.
+- [app/controllers/sacerdote_controller.py](app/controllers/sacerdote_controller.py): painel reativo do sacerdote.
+- [app/static/](app/static/): assets de frontend (Design System em CSS e lógica em JS).
+- [app/templates/](app/templates/): views Jinja2 otimizadas para acessibilidade.
 
 ## Como executar
 

@@ -1,29 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Identificação - Gratia{% endblock %}
+
 {% block content %}
 <div class="gratia-card">
-    <h2 class="text-center mb-4">Quase lá...</h2>
-    <p class="text-center text-muted mb-4">Você será atendido pelo <strong>{{ sacerdote.nome }}</strong>.</p>
+    <h2 class="text-center mb-4">Identificação</h2>
+    <p class="text-center text-muted mb-4">Você está entrando na fila para o confessor: <br><strong class="text-dark">{{ sacerdote.nome }}</strong></p>
     
-    <form action="{{ url_for('fiel.entrar_fila') }}" method="POST">
+    <form action="{{ url_for('fiel.entrar_fila') }}" method="POST" id="form-identificacao">
         <input type="hidden" name="sacerdote_id" value="{{ sacerdote.id }}">
         
         <div class="mb-4">
-            <label class="form-label">Como deseja ser chamado?</label>
-            <input type="text" name="nome_exibicao" class="form-control form-control-lg" placeholder="Seu nome ou pseudônimo">
-            <div class="form-text">Sua privacidade é importante. Pode usar um apelido se preferir.</div>
+            <label for="nome_exibicao" class="form-label fw-bold">Nome ou Apelido</label>
+            <input type="text" id="nome_exibicao" name="nome_exibicao" 
+                   class="form-control form-control-lg border-2" 
+                   placeholder="Ex: Gabriel ou G.S." 
+                   aria-describedby="nome-help"
+                   required>
+            <div id="nome-help" class="form-text mt-2">
+                Pode usar um codinome para preservar sua privacidade. Este nome aparecerá no painel.
+            </div>
         </div>
         
         <div class="mb-4">
-            <label class="form-label">WhatsApp (para avisarmos sua vez)</label>
-            <input type="tel" name="whatsapp" class="form-control form-control-lg" placeholder="(00) 00000-0000">
+            <label for="whatsapp" class="form-label fw-bold">WhatsApp (opcional)</label>
+            <input type="tel" id="whatsapp" name="whatsapp" 
+                   class="form-control form-control-lg border-2" 
+                   placeholder="(00) 00000-0000"
+                   aria-describedby="whatsapp-help">
+            <div id="whatsapp-help" class="form-text mt-2">
+                Enviaremos um aviso quando você for o próximo da fila.
+            </div>
         </div>
         
-        <button type="submit" class="btn btn-gratia-primary btn-lg">Entrar na Fila</button>
+        <div class="d-grid gap-3 mt-5">
+            <button type="submit" class="btn btn-gratia-primary" id="btn-submit">
+                Entrar na Fila de Espera
+            </button>
+            <a href="{{ url_for('fiel.recepcao') }}" class="btn btn-gratia-outline">
+                Voltar e Escolher Outro
+            </a>
+        </div>
     </form>
-    
-    <div class="text-center mt-4">
-        <a href="{{ url_for('fiel.recepcao') }}" class="text-muted">Voltar</a>
-    </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('form-identificacao').addEventListener('submit', function() {
+        Gratia.setLoading(document.getElementById('btn-submit'), true);
+    });
+</script>
 {% endblock %}

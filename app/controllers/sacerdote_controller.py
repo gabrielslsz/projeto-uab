@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from app.models.models import Sacerdote, Atendimento
-from app.database import db
-from app import socketio
+from app.services.sacerdote_service import SacerdoteService
+from app.services.atendimento_service import AtendimentoService
 
 sacerdote_bp = Blueprint('sacerdote', __name__)
 
@@ -9,7 +8,7 @@ sacerdote_bp = Blueprint('sacerdote', __name__)
 def login():
     if request.method == 'POST':
         pin = request.form.get('pin')
-        sacerdote = Sacerdote.query.filter_by(pin_acesso=pin).first()
+        sacerdote = SacerdoteService.validate_login(pin)
         if sacerdote:
             session['sacerdote_id'] = sacerdote.id
             session['role'] = 'SACERDOTE'
@@ -22,15 +21,17 @@ def dashboard():
     if 'sacerdote_id' not in session:
         return redirect(url_for('sacerdote.login'))
     
-    sacerdote = Sacerdote.query.get(session['sacerdote_id'])
-    # Fiéis aguardando
-    fila = Atendimento.query.filter_by(
-        sacerdote_id=sacerdote.id, 
-        status='AGUARDANDO'
-    ).order_by(Atendimento.criado_em.asc()).all()
-    
-    # Próximo da fila
+    sacerdote_id = session['sacerdote_id']
+    sacerdote = SacerdoteService.get_by_id(sacerdote_id)
+    fila = AtendimentoService.get_fila_by_sacerdote(sacerdote_id)
     proximo = fila[0] if fila else None
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'total_fila': len(fila),
+            'proximo': proximo.identificador_exibicao if proximo else None,
+            'fila': [{'id': a.id, 'nome': a.identificador_exibicao, 'hora': a.criado_em.strftime('%H:%M')} for a in fila]
+        })
     
     return render_template('sacerdote/dashboard.html', sacerdote=sacerdote, proximo=proximo, total_fila=len(fila))
 
@@ -39,23 +40,8 @@ def chamar_proximo():
     if 'sacerdote_id' not in session:
         return jsonify({"error": "Não autorizado"}), 403
     
-    sacerdote_id = session['sacerdote_id']
-    proximo = Atendimento.query.filter_by(
-        sacerdote_id=sacerdote_id, 
-        status='AGUARDANDO'
-    ).order_by(Atendimento.criado_em.asc()).first()
-    
+    proximo = AtendimentoService.chamar_proximo(session['sacerdote_id'])
     if proximo:
-        proximo.status = 'CHAMADO'
-        db.session.commit()
-        
-        # Emitir evento em tempo real
-        socketio.emit('proximo_chamado', {
-            'atendimento_id': proximo.id,
-            'identificador': proximo.identificador_exibicao,
-            'sacerdote_id': sacerdote_id
-        })
-        
         return jsonify({"success": True, "fiel": proximo.identificador_exibicao})
     
     return jsonify({"success": False, "message": "Ninguém na fila"})
@@ -67,10 +53,9 @@ def alterar_status():
     
     dados = request.get_json()
     novo_status = dados.get('status')
-    sacerdote = Sacerdote.query.get(session['sacerdote_id'])
-    sacerdote.status = novo_status
-    db.session.commit()
-    return jsonify({"success": True})
+    if SacerdoteService.update_status(session['sacerdote_id'], novo_status):
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 404
 
 @sacerdote_bp.route('/sacerdote/logout')
 def logout():

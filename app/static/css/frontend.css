@@ -1,0 +1,135 @@
+:root {
+    /* Cores Principais */
+    --gratia-primary: #2C3E50;
+    --gratia-accent: #D4AF37;
+    --gratia-background: #F8F9FA;
+    --gratia-surface: #FFFFFF;
+    
+    /* Status */
+    --gratia-success: #27AE60;
+    --gratia-warning: #F39C12;
+    --gratia-error: #E74C3C;
+    
+    /* Neutros */
+    --gratia-text: #2C3E50;
+    --gratia-text-muted: #7F8C8D;
+    
+    /* Espaçamento e Bordas */
+    --gratia-radius-card: 15px;
+    --gratia-radius-btn: 10px;
+    --gratia-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+body {
+    background-color: var(--gratia-background);
+    font-family: 'Inter', sans-serif;
+    color: var(--gratia-text);
+    font-size: 18px; /* Acessibilidade pastoral */
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.gratia-card {
+    border: none;
+    border-radius: var(--gratia-radius-card);
+    box-shadow: var(--gratia-shadow);
+    background: var(--gratia-surface);
+    padding: 2rem;
+    transition: transform 0.3s ease;
+}
+
+/* Acessibilidade: Foco Visível */
+*:focus-visible {
+    outline: 3px solid var(--gratia-accent);
+    outline-offset: 2px;
+}
+
+/* Botões Customizados */
+.btn-gratia-primary {
+    background-color: var(--gratia-primary);
+    color: white;
+    border-radius: var(--gratia-radius-btn);
+    padding: 12px 24px;
+    font-weight: 600;
+    width: 100%;
+    border: 2px solid var(--gratia-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 54px; /* Acessibilidade toque */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-gratia-primary:hover {
+    background-color: #34495E;
+    border-color: #34495E;
+    color: var(--gratia-accent);
+}
+
+.btn-gratia-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-gratia-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-gratia-outline {
+    border: 2px solid var(--gratia-accent);
+    color: var(--gratia-primary);
+    border-radius: var(--gratia-radius-btn);
+    padding: 12px 24px;
+    font-weight: 600;
+    width: 100%;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 54px;
+    transition: all 0.3s ease;
+}
+
+.btn-gratia-outline:hover {
+    background-color: var(--gratia-accent);
+    color: white;
+}
+
+.text-pastoral {
+    color: var(--gratia-text-muted);
+    font-style: italic;
+}
+
+.posicao-numero {
+    font-size: 5rem;
+    color: var(--gratia-accent);
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Utilitários de Responsividade */
+@media (max-width: 767.98px) {
+    .gratia-card {
+        padding: 1.5rem;
+    }
+    
+    .posicao-numero {
+        font-size: 4rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}

@@ -1,20 +1,58 @@
 {% extends "base.html" %}
 {% block title %}Sua Posição - Gratia{% endblock %}
+
 {% block content %}
-<div class="gratia-card text-center">
-    <h2 class="mb-3">Tudo certo, {{ atendimento.identificador_exibicao }}!</h2>
+<div class="gratia-card text-center" role="region" aria-labelledby="status-title">
+    <h2 id="status-title" class="mb-3">Tudo certo, {{ atendimento.identificador_exibicao }}!</h2>
     <p class="text-muted">Sua posição na fila é:</p>
     
-    <div class="posicao-numero my-4">{{ posicao }}º</div>
+    <div class="posicao-numero my-4" id="posicao-valor" aria-live="polite">
+        {{ posicao }}º
+    </div>
     
-    <p class="mb-4">Aguarde em silêncio e oração. Enviaremos uma mensagem no seu WhatsApp quando sua vez estiver chegando.</p>
+    <p class="mb-4">Aguarde em silêncio e oração. Você será chamado em breve pelo confessor selecionado.</p>
     
-    <div class="alert alert-warning py-3">
-        <strong>Atenção:</strong> Fique atento ao seu celular e à proximidade do confessionário.
+    <div class="alert alert-warning py-3 border-0 shadow-sm" style="background-color: rgba(243, 156, 18, 0.1); color: var(--gratia-warning);">
+        <h5 class="mb-1"><i class="bi bi-info-circle"></i> Atenção</h5>
+        <p class="mb-0 small">Fique atento à proximidade do confessionário quando sua posição for próxima de 1.</p>
     </div>
 
-    <div class="mt-4">
-        <small class="text-muted">ID do Atendimento: {{ atendimento.id[:8] }}</small>
+    <div class="mt-4 pt-4 border-top">
+        <small class="text-muted">Protocolo: <code>{{ atendimento.id[:8].upper() }}</code></small>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+    const socket = io();
+    const posicaoValor = document.getElementById('posicao-valor');
+    const atendimentoId = "{{ atendimento.id }}";
+
+    socket.on('posicao_atualizada', (data) => {
+        // Se a atualização for para este atendimento ou para o sacerdote em questão
+        if (data.atendimento_id === atendimentoId || data.sacerdote_id === "{{ atendimento.sacerdote_id }}") {
+            // Recarrega apenas a posição via fetch ou atualiza se o socket enviar a nova posição
+            // Para garantir precisão com as regras de negócio complexas, vamos buscar a posição atualizada
+            atualizarPosicao();
+        }
+    });
+
+    function atualizarPosicao() {
+        fetch(window.location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.json())
+            .then(data => {
+                if (data.posicao) {
+                    posicaoValor.innerText = data.posicao + 'º';
+                    if (data.posicao === 0) {
+                        posicaoValor.innerText = "Sua vez!";
+                        posicaoValor.classList.add('text-success');
+                        Gratia.showFeedback("É a sua vez! Por favor, dirija-se ao atendimento.", "success");
+                    }
+                }
+            })
+            .catch(err => console.error("Erro ao atualizar posição:", err));
+    }
+</script>
 {% endblock %}

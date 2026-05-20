@@ -8,25 +8,61 @@ Esta inspeção detalhada de cibersegurança foi realizada no projeto Gratia par
 
 | Severidade | Quantidade |
 | :--- | :--- |
-| Crítica | 2 |
-| Alta | 3 |
-| Média | 3 |
+| Crítica | 3 |
+| Alta | 5 |
+| Média | 4 |
 | Baixa | 1 |
-| **Total** | **9** |
+| **Total** | **13** |
 
 ### As 5 Ações Mais Urgentes
 
-1. **Hash de Credenciais:** Implementar hashing (ex: BCrypt) para os PINs dos sacerdotes.
-2. **Proteção contra CSRF:** Habilitar proteção CSRF em todos os formulários e rotas POST.
-3. **Desativar Modo Debug:** Remover `debug=True` da configuração de produção.
-4. **Segurança de Sessão:** Configurar cookies de sessão como `HTTPOnly`, `Secure` e `SameSite=Lax`.
-5. **Segurança de Segredos:** Eliminar segredos padrão para `SECRET_KEY`.
+1. **Segurança de Credenciais:** Implementar hashing (BCrypt) e **Rate Limiting** para o login por PIN para evitar brute force.
+2. **Proteção contra CSRF:** Habilitar proteção CSRF em toda a aplicação.
+3. **Correção de Lógica de Autenticação:** Exigir um identificador único (e-mail ou ID) além do PIN, ou garantir a unicidade absoluta de PINs.
+4. **Integridade de Dados:** Utilizar `with_for_update()` em operações de fila para evitar condições de corrida.
+5. **Segurança de Infraestrutura:** Desativar o Modo Debug e configurar cookies de sessão seguros.
 
 ---
 
-## Detalhamento das Vulnerabilidades (Nível: MODERADO)
+## Detalhamento das Vulnerabilidades (Nível: PROFUNDO)
 
 ... (achados anteriores permanecem, adicionando novos abaixo)
+
+### 10. Vulnerabilidade a Ataques de Força Bruta (Brute Force)
+- **Localização:** `app/controllers/sacerdote_controller.py` (Rota `/sacerdote/login`)
+- **Descrição:** O sistema permite tentativas ilimitadas de login com um PIN de apenas 6 dígitos.
+- **Evidência:** Ausência de middleware ou lógica de rate limiting (ex: `Flask-Limiter`) na rota de autenticação.
+- **Impacto Potencial:** Um atacante pode descobrir o PIN de um sacerdote em pouco tempo através de automação, ganhando controle total sobre o painel de atendimentos.
+- **Nível de Severidade:** Crítica
+- **Recomendação:** Implementar `Flask-Limiter` para bloquear o IP após X tentativas falhas.
+- **Referências:** OWASP A07:2021 – Authentication Failures, CWE-307.
+
+### 11. Falha de Design: Login Baseado Apenas em PIN Não Único
+- **Localização:** `app/controllers/sacerdote_controller.py` (Função `login`)
+- **Descrição:** O login é realizado apenas via PIN. Se dois sacerdotes tiverem o mesmo PIN, o sistema autenticará sempre o primeiro encontrado.
+- **Evidência:** `Sacerdote.query.filter_by(pin_acesso=pin).first()`.
+- **Impacto Potencial:** Colisões de credenciais e acesso a contas de terceiros por coincidência ou má escolha de PIN.
+- **Nível de Severidade:** Alta
+- **Recomendação:** Exigir a seleção do sacerdote ou inserção de um e-mail/usuário antes do PIN.
+- **Referências:** OWASP A06:2021 – Insecure Design, CWE-287.
+
+### 12. Condição de Corrida (Race Condition) na Gestão de Fila
+- **Localização:** `app/controllers/sacerdote_controller.py` (Função `chamar_proximo`)
+- **Descrição:** Múltiplas requisições simultâneas para chamar o próximo fiel podem resultar no mesmo fiel sendo chamado por instâncias diferentes antes do commit no banco.
+- **Evidência:** Consulta seguida de atualização sem bloqueio de linha (pessimistic locking).
+- **Impacto Potencial:** Inconsistência na fila, múltiplos sacerdotes tentando atender a mesma pessoa.
+- **Nível de Severidade:** Alta
+- **Recomendação:** Utilizar `.with_for_update()` na consulta do próximo atendimento para bloquear a linha até o fim da transação.
+- **Referências:** OWASP A08:2021 – Software or Data Integrity Failures, CWE-362.
+
+### 13. Insecure Direct Object Reference (IDOR) no Status do Fiel
+- **Localização:** `app/controllers/fiel_controller.py` (Rota `/status/<atendimento_id>`)
+- **Descrição:** Embora utilize UUID, qualquer pessoa com o link pode visualizar o status e o nome de exibição de um fiel sem qualquer verificação adicional.
+- **Evidência:** A rota apenas busca o objeto pelo ID e renderiza o template.
+- **Impacto Potencial:** Vazamento de informações de presença (quem está na igreja) caso o UUID seja interceptado ou compartilhado indevidamente.
+- **Nível de Severidade:** Média
+- **Recomendação:** Validar o acesso através de um token assinado ou cookie de sessão gerado no momento da entrada na fila.
+- **Referências:** OWASP A01:2021 – Broken Access Control, CWE-639.
 
 ### 7. Ausência de Proteção contra CSRF (Cross-Site Request Forgery)
 - **Localização:** Global (`app/__init__.py`), Formulários em `app/templates/`
